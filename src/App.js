@@ -1,22 +1,36 @@
 import React, { Component } from 'react';
+import $ from 'jquery';
 import './css/pure-min.css';
 import './css/side-menu.css';
 
 class App extends Component {
   constructor() {
+    console.log('Constructor');
     super();
-    this.state = {
-      authors: [
-        {
-          name: 'willian',
-          email: 'willian.ribeiro@gauge.com.br',
-          password: '1234'
-        }
-      ]
-    };
+    this.state = { authors : [] };
   }
 
+  // Runs before render()
+  componentWillMount() {
+    console.log('componentWillMount');
+    $.ajax({
+      url: 'http://cdc-react.herokuapp.com/api/autores',
+      dataType: 'json',
+      success: function(response) {
+        console.log('Success');
+        this.setState({ authors : response });
+      }.bind(this)
+    });
+  }
+
+  // Runs after render()
+  componentDidMount() {
+    console.log('componentDidMount');
+  }
+
+  // Runs every time state is changed
   render() {
+    console.log('Render');
     return (
       <div id="layout">
           <a href="#menu" id="menuLink" className="menu-link">
@@ -73,7 +87,7 @@ class App extends Component {
                         this.state.authors.map(function(author) {
                           return (
                             <tr>
-                              <td>{ author.name }</td>
+                              <td>{ author.nome }</td>
                               <td>{ author.email }</td>
                             </tr>
                           );
