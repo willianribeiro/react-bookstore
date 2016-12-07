@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { AuthorTable, AuthorForm } from './Author';
 import './css/pure-min.css';
 import './css/side-menu.css';
+
+import { AuthorTable, AuthorForm } from './Author';
 
 class App extends Component {
   constructor() {

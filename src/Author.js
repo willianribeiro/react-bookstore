@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import $ from 'jquery';
+
 import CustomInput from './components/CustomInput';
 import FormSubmit from './components/FormSubmit';
 
