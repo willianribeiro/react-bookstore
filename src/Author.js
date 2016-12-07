@@ -4,24 +4,39 @@ import $ from 'jquery';
 import CustomInput from './components/CustomInput';
 import FormSubmit from './components/FormSubmit';
 
-export class AuthorTable extends Component {
+export default class AuthorBox extends Component {
   constructor() {
     super();
     this.state = { authors : [] };
+    this.updateAuthorsTable = this.updateAuthorsTable.bind(this);
   }
 
   componentDidMount() {
-    console.log('componentDidMount() foi chamado...');
     $.ajax({
       url: 'http://cdc-react.herokuapp.com/api/autores',
       dataType: 'json',
       success: function(response) {
-        console.log('Resposta chegou');
-        this.setState({ authors : response });
+        console.log('Lista de autores chegou');
+        this.setState({ authors : response});
       }.bind(this)
     });
   }
 
+  updateAuthorsTable(arr) {
+    this.setState({ authors : arr });
+  }
+
+  render() {
+    return (
+      <div>
+        <AuthorForm cbUpdateTable={ this.updateAuthorsTable }></AuthorForm>
+        <AuthorTable authors={ this.state.authors }></AuthorTable>
+      </div>
+    );
+  }
+}
+
+class AuthorTable extends Component {
   render() {
     return (
       <div>
@@ -34,7 +49,7 @@ export class AuthorTable extends Component {
           </thead>
           <tbody>
             {
-              this.state.authors.map(function(author) {
+              this.props.authors.map(function(author) {
                 return (
                   <tr key={author.id}>
                     <td>{ author.nome }</td>
@@ -50,7 +65,7 @@ export class AuthorTable extends Component {
   }
 }
 
-export class AuthorForm extends Component {
+class AuthorForm extends Component {
   constructor() {
     super();
     this.state = {
@@ -96,7 +111,7 @@ export class AuthorForm extends Component {
       data: JSON.stringify(data),
       success: function(response) {
         console.log('Dados gravados com sucesso.');
-        this.setState({ authors : response });
+        this.props.cbUpdateTable(response);
       }.bind(this),
       error: function(response) {
         console.log('Erro ao gravar dados.');

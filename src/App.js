@@ -2,17 +2,10 @@ import React, { Component } from 'react';
 import './css/pure-min.css';
 import './css/side-menu.css';
 
-import { AuthorTable, AuthorForm } from './Author';
+import AuthorBox from './Author';
 
 class App extends Component {
-  constructor() {
-    console.log('constructor() foi chamado...');
-    super();
-
-  }
-
   render() {
-    console.log('render() foi chamado...');
     return (
       <div id="layout">
           <a href="#menu" id="menuLink" className="menu-link">
@@ -36,8 +29,7 @@ class App extends Component {
                   <h1>Cadastro de autores</h1>
               </div>
               <div className="content" id="content">
-                <AuthorForm></AuthorForm>
-                <AuthorTable></AuthorTable>
+                <AuthorBox></AuthorBox>
             </div>
           </div>
       </div>
