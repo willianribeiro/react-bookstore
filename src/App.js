@@ -86,7 +86,7 @@ class App extends Component {
                       {
                         this.state.authors.map(function(author) {
                           return (
-                            <tr>
+                            <tr key={author.id}>
                               <td>{ author.nome }</td>
                               <td>{ author.email }</td>
                             </tr>
