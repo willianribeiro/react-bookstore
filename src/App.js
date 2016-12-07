@@ -13,6 +13,11 @@ class App extends Component {
   // Runs before render()
   componentWillMount() {
     console.log('componentWillMount');
+  }
+
+  // Runs after render()
+  componentDidMount() {
+    console.log('componentDidMount');
     $.ajax({
       url: 'http://cdc-react.herokuapp.com/api/autores',
       dataType: 'json',
@@ -21,11 +26,6 @@ class App extends Component {
         this.setState({ authors : response });
       }.bind(this)
     });
-  }
-
-  // Runs after render()
-  componentDidMount() {
-    console.log('componentDidMount');
   }
 
   // Runs every time state is changed
