@@ -5,32 +5,80 @@ import './css/side-menu.css';
 
 class App extends Component {
   constructor() {
-    console.log('Constructor');
+    console.log('constructor() foi chamado...');
     super();
-    this.state = { authors : [] };
+    this.sendForm = this.sendForm.bind(this);
+    this.setName = this.setName.bind(this);
+    this.setEmail = this.setEmail.bind(this);
+    this.setPassword = this.setPassword.bind(this);
+    this.state = {
+      authors : [],
+      nome: '',
+      email: '',
+      senha: ''
+    };
   }
 
   // Runs before render()
   componentWillMount() {
-    console.log('componentWillMount');
+    console.log('componentWillMount() foi chamado...');
   }
 
   // Runs after render()
   componentDidMount() {
-    console.log('componentDidMount');
+    console.log('componentDidMount() foi chamado...');
     $.ajax({
       url: 'http://cdc-react.herokuapp.com/api/autores',
       dataType: 'json',
       success: function(response) {
-        console.log('Success');
+        console.log('Resposta chegou');
         this.setState({ authors : response });
       }.bind(this)
     });
   }
 
+  // Function called when submit form
+  sendForm(event) {
+    console.log('sendForm() foi chamado...');
+
+    event.preventDefault();
+    var data;
+    data = {
+      nome: this.state.nome,
+      email: this.state.email,
+      senha: this.state.senha
+    };
+
+    $.ajax({
+      url: 'http://cdc-react.herokuapp.com/api/autores',
+      dataType: 'json',
+      contentType: 'application/json',
+      type: 'post',
+      data: JSON.stringify(data),
+      success: function(response) {
+        console.log('Dados gravados com sucesso.');
+      },
+      error: function(response) {
+        console.log('Erro ao gravar dados.');
+      }
+    });
+  }
+
+  setName(event) {
+    this.setState({ nome: event.target.value });
+  }
+
+  setEmail(event) {
+    this.setState({ email: event.target.value });
+  }
+
+  setPassword(event) {
+    this.setState({ senha: event.target.value });
+  }
+
   // Runs every time state is changed
   render() {
-    console.log('Render');
+    console.log('render() foi chamado...');
     return (
       <div id="layout">
           <a href="#menu" id="menuLink" className="menu-link">
@@ -55,18 +103,18 @@ class App extends Component {
               </div>
               <div className="content" id="content">
                 <div className="pure-form pure-form-aligned">
-                  <form className="pure-form pure-form-aligned">
+                  <form className="pure-form pure-form-aligned" onSubmit={ this.sendForm }>
                     <div className="pure-control-group">
                       <label htmlFor="nome">Nome</label>
-                      <input id="nome" type="text" name="nome" value=""  />
+                      <input id="nome" type="text" name="nome" value={ this.state.nome } onChange={ this.setName } />
                     </div>
                     <div className="pure-control-group">
                       <label htmlFor="email">Email</label>
-                      <input id="email" type="email" name="email" value=""  />
+                      <input id="email" type="email" name="email" value={ this.state.email } onChange={ this.setEmail } />
                     </div>
                     <div className="pure-control-group">
                       <label htmlFor="senha">Senha</label>
-                      <input id="senha" type="password" name="senha"  />
+                      <input id="senha" type="password" name="senha" value={ this.state.senha } onChange={ this.setPassword }/>
                     </div>
                     <div className="pure-control-group">
                       <label></label>
