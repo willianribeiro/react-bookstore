@@ -4,6 +4,7 @@ import PubSub from 'pubsub-js';
 
 import CustomInput from './components/CustomInput';
 import FormSubmit from './components/FormSubmit';
+import ErrorHandler from './ErrorHandler';
 
 export default class AuthorBox extends Component {
   constructor() {
@@ -120,14 +121,12 @@ class AuthorForm extends Component {
       }.bind(this),
       error: function(response) {
         console.log('Erro ao gravar dados.');
-
-        for (var i = 0; i < response.responseJSON.errors.length; i++) {
-          PubSub.publish('formValidator:error', response.responseJSON.errors[i]);
+        if (response.status === 400) {
+          new ErrorHandler().publishErrors(response.responseJSON);
         }
       },
       beforeSend: function() {
-          PubSub.publish('formValidator:error', {});
-
+          PubSub.publish('formValidator:clearErrors', {});
       }
     });
   }

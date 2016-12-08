@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PubSub from 'pubsub-js';
-import $ from 'jquery';
 
 class CustomInput extends Component {
   constructor() {
@@ -10,13 +9,13 @@ class CustomInput extends Component {
 
   componentDidMount() {
     PubSub.subscribe('formValidator:error', function(topic, error) {
-      if (!$.isEmptyObject(error)) {
-        if (error.field === this.props.name) {
-          this.setState({ errorMsg : error.defaultMessage });
-        }
-      } else {
-        this.setState({ errorMsg: '' });
+      if (error.field === this.props.name) {
+        this.setState({ errorMsg : error.defaultMessage });
       }
+    }.bind(this));
+
+    PubSub.subscribe('formValidator:clearErrors', function(topic) {
+      this.setState({ errorMsg : '' });
     }.bind(this));
   }
 
