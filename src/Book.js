@@ -9,7 +9,8 @@ class BookBox extends Component {
   constructor() {
     super();
     this.state = {
-      books : []
+      books : [],
+      authors: []
     };
   }
 
@@ -19,6 +20,14 @@ class BookBox extends Component {
       dataType: 'json',
       success: function(response) {
         this.setState({ books : response });
+      }.bind(this)
+    });
+
+    $.ajax({
+      url: 'http://cdc-react.herokuapp.com/api/autores',
+      dataType: 'json',
+      success: function(response) {
+        this.setState({ authors : response });
       }.bind(this)
     });
 
@@ -34,7 +43,7 @@ class BookBox extends Component {
             <h1>Cadastro de livros</h1>
         </div>
         <div className="content" id="content">
-          <BookForm></BookForm>
+          <BookForm authors={ this.state.authors }></BookForm>
           <BookTable books={ this.state.books }></BookTable>
         </div>
       </div>
@@ -151,14 +160,21 @@ class BookForm extends Component {
             onChange={ this.setPrice }
             label="Preço">
           </CustomInput>
-          <CustomInput
-          id="autorId"
-          type="text"
-          name="autorId"
-          value={ this.state.authorId }
-          onChange={ this.setAuthorId }
-          label="Id do autor">
-          </CustomInput>
+          <div className="pure-control-group">
+            <label htmlFor="autorId" >{ this.props.label }</label>
+            <select value={ this.state.authorId } name="autorId" id="autorId" onChange={ this.setAuthorId }>
+              <option value="">--Selecione um autor--</option>
+              {
+                this.props.authors.map(function(author) {
+                  return <option value={ author.id } key={ author.id }>{ author.nome }</option>
+                })
+              }
+            </select>
+            <span>
+              { this.state.errorMsg }
+            </span>
+          </div>
+
           <FormSubmit label="Gravar"></FormSubmit>
         </form>
       </div>
