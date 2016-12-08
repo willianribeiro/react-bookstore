@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import $ from 'jquery';
+import PubSub from 'pubsub-js';
 
 import CustomInput from './components/CustomInput';
 import FormSubmit from './components/FormSubmit';
@@ -8,7 +9,6 @@ export default class AuthorBox extends Component {
   constructor() {
     super();
     this.state = { authors : [] };
-    this.updateAuthorsTable = this.updateAuthorsTable.bind(this);
   }
 
   componentDidMount() {
@@ -20,16 +20,16 @@ export default class AuthorBox extends Component {
         this.setState({ authors : response});
       }.bind(this)
     });
-  }
 
-  updateAuthorsTable(arr) {
-    this.setState({ authors : arr });
+    PubSub.subscribe('author:updateAuthors', function(topic, authors) {
+      this.setState({ authors : authors });
+    }.bind(this));
   }
 
   render() {
     return (
       <div>
-        <AuthorForm cbUpdateTable={ this.updateAuthorsTable }></AuthorForm>
+        <AuthorForm></AuthorForm>
         <AuthorTable authors={ this.state.authors }></AuthorTable>
       </div>
     );
@@ -111,8 +111,8 @@ class AuthorForm extends Component {
       data: JSON.stringify(data),
       success: function(response) {
         console.log('Dados gravados com sucesso.');
-        this.props.cbUpdateTable(response);
-      }.bind(this),
+        PubSub.publish('author:updateAuthors', response);
+      },
       error: function(response) {
         console.log('Erro ao gravar dados.');
       }
