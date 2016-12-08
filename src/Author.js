@@ -49,6 +49,7 @@ class AuthorTable extends Component {
         <table className="pure-table">
           <thead>
             <tr>
+              <th>Id</th>
               <th>Nome</th>
               <th>email</th>
             </tr>
@@ -58,6 +59,7 @@ class AuthorTable extends Component {
               this.props.authors.map(function(author) {
                 return (
                   <tr key={author.id}>
+                    <td>{ author.id }</td>
                     <td>{ author.nome }</td>
                     <td>{ author.email }</td>
                   </tr>
@@ -158,16 +160,16 @@ class AuthorForm extends Component {
             label="E-mail">
           </CustomInput>
 
-            <CustomInput
-              id="password"
-              type="password"
-              name="senha"
-              value={ this.state.password }
-              onChange={ this.setPassword }
-              label="Senha">
-            </CustomInput>
+          <CustomInput
+            id="password"
+            type="password"
+            name="senha"
+            value={ this.state.password }
+            onChange={ this.setPassword }
+            label="Senha">
+          </CustomInput>
 
-            <FormSubmit label="Gravar"></FormSubmit>
+          <FormSubmit label="Gravar"></FormSubmit>
         </form>
       </div>
     );
