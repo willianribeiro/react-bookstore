@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
+import PubSub from 'pubsub-js';
 import $ from 'jquery';
+import CustomInput from './components/CustomInput';
+import FormSubmit from './components/FormSubmit';
+import ErrorHandler from './ErrorHandler';
 
-class Book extends Component {
+class BookBox extends Component {
   constructor() {
     super();
     this.state = {
       books : []
-    }
+    };
   }
 
   componentDidMount() {
@@ -17,6 +21,10 @@ class Book extends Component {
         this.setState({ books : response });
       }.bind(this)
     });
+
+    PubSub.subscribe('book:updateBooks', function(topic, response) {
+      this.setState({ books : response});
+    }.bind(this));
   }
 
   render() {
@@ -26,32 +34,136 @@ class Book extends Component {
             <h1>Cadastro de livros</h1>
         </div>
         <div className="content" id="content">
-          <table className="pure-table">
-            <thead>
-              <tr>
-                <th>Livro</th>
-                <th>Autor</th>
-                <th>Preço</th>
-              </tr>
-            </thead>
-            <tbody>
-              {
-                this.state.books.map(function(book) {
-                  return (
-                    <tr key={book.id}>
-                      <td>{ book.titulo }</td>
-                      <td>{ book.autor.nome }</td>
-                      <td>{ book.preco }</td>
-                    </tr>
-                  );
-                })
-              }
-            </tbody>
-          </table>
+          <BookForm></BookForm>
+          <BookTable books={ this.state.books }></BookTable>
         </div>
       </div>
     );
   }
 }
 
-export default Book;
+class BookTable extends Component {
+  render() {
+    return(
+      <table className="pure-table">
+        <thead>
+          <tr>
+            <th>Livro</th>
+            <th>Autor</th>
+            <th>Preço</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            this.props.books.map(function(book) {
+              return (
+                <tr key={ book.id }>
+                  <td>{ book.titulo }</td>
+                  <td>{ book.autor.nome }</td>
+                  <td>{ book.preco }</td>
+                </tr>
+              );
+            })
+          }
+        </tbody>
+      </table>
+    );
+  }
+}
+
+class BookForm extends Component {
+  constructor() {
+    super();
+    this.state = {
+      title : '',
+      authorId : '',
+      price : ''
+    };
+    this.sendForm = this.sendForm.bind(this);
+    this.setTitle = this.setTitle.bind(this);
+    this.setPrice = this.setPrice.bind(this);
+    this.setAuthorId = this.setAuthorId.bind(this);
+  }
+
+  setTitle(event) {
+    this.setState({ title : event.target.value });
+  }
+
+  setPrice(event) {
+    this.setState({ price : event.target.value });
+  }
+
+  setAuthorId(event) {
+    this.setState({ authorId : event.target.value });
+  }
+
+  sendForm(event) {
+    var data;
+    event.preventDefault();
+    data = {
+      titulo : this.state.title,
+      preco : this.state.price,
+      autorId : this.state.authorId
+    };
+
+    $.ajax({
+      type: 'post',
+      url: 'http://cdc-react.herokuapp.com/api/livros',
+      contentType: 'application/json',
+      dataType: 'json',
+      data: JSON.stringify(data),
+      success: function(response) {
+        this.setState({
+          title: '',
+          price: '',
+          authorId: ''
+        })
+        PubSub.publish('book:updateBooks', response);
+      }.bind(this),
+      error: function(response) {
+        if (response.status === 400) {
+          new ErrorHandler().publishErrors(response.responseJSON);
+        }
+      },
+      beforeSend: function() {
+        PubSub.publish('formValidator:clearErrors', {});
+      }
+    });
+  }
+
+  render() {
+    return(
+      <div className="pure-form pure-form-aligned">
+        <form className="pure-form pure-form-aligned" onSubmit={ this.sendForm }>
+          <CustomInput
+            id="titulo"
+            type="text"
+            name="titulo"
+            value={ this.state.title }
+            onChange={ this.setTitle }
+            label="Título do livro">
+          </CustomInput>
+          <CustomInput
+            id="preco"
+            type="text"
+            name="preco"
+            value={ this.state.price }
+            onChange={ this.setPrice }
+            label="Preço">
+          </CustomInput>
+          <CustomInput
+          id="autorId"
+          type="text"
+          name="autorId"
+          value={ this.state.authorId }
+          onChange={ this.setAuthorId }
+          label="Id do autor">
+          </CustomInput>
+          <FormSubmit label="Gravar"></FormSubmit>
+        </form>
+      </div>
+    );
+  }
+}
+
+export default BookBox;
