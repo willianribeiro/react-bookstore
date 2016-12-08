@@ -112,9 +112,22 @@ class AuthorForm extends Component {
       success: function(response) {
         console.log('Dados gravados com sucesso.');
         PubSub.publish('author:updateAuthors', response);
-      },
+        this.setState({
+          name: '',
+          email: '',
+          password: ''
+        });
+      }.bind(this),
       error: function(response) {
         console.log('Erro ao gravar dados.');
+
+        for (var i = 0; i < response.responseJSON.errors.length; i++) {
+          PubSub.publish('formValidator:error', response.responseJSON.errors[i]);
+        }
+      },
+      beforeSend: function() {
+          PubSub.publish('formValidator:error', {});
+
       }
     });
   }
@@ -144,7 +157,7 @@ class AuthorForm extends Component {
             <CustomInput
               id="password"
               type="password"
-              name="password"
+              name="senha"
               value={ this.state.password }
               onChange={ this.setPassword }
               label="Senha">
