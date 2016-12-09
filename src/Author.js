@@ -82,21 +82,12 @@ class AuthorForm extends Component {
       password: ''
     };
     this.sendForm = this.sendForm.bind(this);
-    this.setName = this.setName.bind(this);
-    this.setEmail = this.setEmail.bind(this);
-    this.setPassword = this.setPassword.bind(this);
   }
 
-  setName(event) {
-    this.setState({ name: event.target.value });
-  }
-
-  setEmail(event) {
-    this.setState({ email: event.target.value });
-  }
-
-  setPassword(event) {
-    this.setState({ password: event.target.value });
+  saveChange(inputName, event) {
+    var entry = {};
+    entry[inputName] = event.target.value;
+    this.setState(entry);
   }
 
   // Function called when submit form
@@ -147,16 +138,16 @@ class AuthorForm extends Component {
             type="text"
             name="nome"
             value={ this.state.name }
-            onChange={ this.setName }
+            onChange={ this.saveChange.bind(this, 'name') }
             label="Nome">
           </CustomInput>
 
           <CustomInput
             id="email"
-            type="text"
+            type="email"
             name="email"
             value={ this.state.email }
-            onChange={ this.setEmail }
+            onChange={ this.saveChange.bind(this, 'email') }
             label="E-mail">
           </CustomInput>
 
@@ -165,7 +156,7 @@ class AuthorForm extends Component {
             type="password"
             name="senha"
             value={ this.state.password }
-            onChange={ this.setPassword }
+            onChange={ this.saveChange.bind(this, 'password') }
             label="Senha">
           </CustomInput>
 
